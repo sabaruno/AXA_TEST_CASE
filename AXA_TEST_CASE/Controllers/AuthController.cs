@@ -9,18 +9,20 @@ namespace AXA_TEST_CASE.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly DataAccess dataAccess;
+        private readonly AuthRepo _authRepo;
+        private readonly TokenProvider _tokenProvider;
 
-        public AuthController(DataAccess _dataAccess)
+        public AuthController(AuthRepo authRepo, TokenProvider tokenProvider)
         {
-            this.dataAccess = _dataAccess;
+            this._authRepo = authRepo;
+            this._tokenProvider = tokenProvider;
         }
 
         [HttpPost("register")]
-        public async Task<ActionResult> Register(UserAccount req)
+        public async Task<ActionResult> Register(RegisterRequest req)
         {
             string hashdePassword = BCrypt.Net.BCrypt.HashPassword(req.Password);
-            var result = await dataAccess.RegisterUser(req.Email, hashdePassword);
+            var result = await _authRepo.RegisterUser(req.Email, hashdePassword);
 
             if(result)
             {
@@ -32,6 +34,28 @@ namespace AXA_TEST_CASE.Controllers
             }
 
         }
-         
+
+        [HttpPost]
+        public async Task<ActionResult<AuthResponse>> Login(AuthRequest req)
+        {
+            AuthResponse response = new AuthResponse();
+            
+            var user  = await _authRepo.FindUserByEmail(req.Email);
+            if(user == null)
+                return BadRequest("User Not Found");
+
+            var varifyPassword = BCrypt.Net.BCrypt.Verify(req.Password, user.Password);
+            
+            if(!varifyPassword)
+                return BadRequest("Wrong Password ");
+
+
+            var token = _tokenProvider.GenerateToken(user);
+            response.AccessToken = token.AccessToken;
+
+            return response;
+
+        }
+
     }
 }

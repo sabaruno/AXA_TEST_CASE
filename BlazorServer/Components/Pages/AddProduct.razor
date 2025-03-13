@@ -1,0 +1,30 @@
+﻿@page "/addProduct"
+@using BlazorServer.DTO
+@rendermode InteractiveServer
+@inject ProductService ProductService
+@inject NavigationManager nav
+
+<PageTitle>Add Product</PageTitle>
+
+<h1>Add Product</h1>
+
+<input type="text" @bind-value="request.Name" class="form-control" placeholder="Name" required autofocus>
+<br/>
+<input type="text" @bind-value="request.Price" class="form-control" placeholder="Price" required>
+<br />
+<button class="btn btn-lg btn-primary btn-block w-20" @onclick="SaveProduct">
+    Save
+</button>
+
+@code {
+    public ProductRequest request = new ProductRequest();
+
+    private async Task SaveProduct()
+    {
+        var status = await ProductService.InsertProduct(request);
+        if (status)
+        {
+            nav.NavigateTo("/product");
+        }
+    }
+}

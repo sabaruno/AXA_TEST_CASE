@@ -1,13 +1,14 @@
 ﻿using System.Data.SqlClient;
 using System.Threading.Tasks;
+using WebAPI.Model;
 using Dapper;
 
 namespace AXA_TEST_CASE.Infrastructure
 {
-    public class DataAccess
+    public class AuthRepo
     {
         private SqlConnection connection;
-        public DataAccess(IConfiguration configuration) 
+        public AuthRepo(IConfiguration configuration) 
         {
             string connectionString = configuration.GetConnectionString("DefaultConnection");
             connection = new SqlConnection(connectionString);
@@ -35,5 +36,15 @@ namespace AXA_TEST_CASE.Infrastructure
 
             return result > 0; 
         }
+
+        public async Task<UserAccount> FindUserByEmail(string email)
+        {
+
+            var sql = "SELECT * FROM [UserAccount] WHERE [Email] = @email";
+
+
+            return await connection.QueryFirstOrDefaultAsync<UserAccount>(sql,new { email = email});
+        }
+
     }
 }

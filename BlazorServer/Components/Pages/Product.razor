@@ -1,0 +1,61 @@
+﻿@page "/product"
+@using BlazorServer.DTO
+@rendermode InteractiveServer
+@inject ProductService ProductService
+@inject NavigationManager nav
+
+<PageTitle>Product</PageTitle>
+
+<h1>Product</h1>
+
+@if (products == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th aria-label="Name">Name</th>
+                <th aria-label="Price">Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var product in products)
+            {
+                <tr>
+                    <td>@product.Name</td>
+                    <td>@product.Price</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <button class="btn btn-lg btn-primary btn-block align-items-center w-20" @onclick="AddProduct">
+        Add Product
+    </button>
+}
+
+@code {
+    private List<ProductResponse> products;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await InitialValues();
+    }
+
+    private async Task InitialValues()
+    {
+        // Simulate asynchronous loading to demonstrate streaming rendering
+        await Task.Delay(500);
+        var result = await ProductService.GetAll();
+
+        if (result != null)
+            products = result;
+    }
+
+    private async Task AddProduct()
+    {
+        nav.NavigateTo("/addProduct");
+    }
+}
