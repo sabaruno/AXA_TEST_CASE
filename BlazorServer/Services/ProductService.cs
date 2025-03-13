@@ -6,11 +6,9 @@ namespace BlazorServer.Services
 {
     public class ProductService
     {
-        private readonly NavigationManager _nav;
         private HttpClient client;
-        public ProductService(NavigationManager nav, IHttpClientFactory httpClientFactory)
+        public ProductService(IHttpClientFactory httpClientFactory)
         {
-            this._nav = nav;
             client = httpClientFactory.CreateClient("AppClient");
         }
 

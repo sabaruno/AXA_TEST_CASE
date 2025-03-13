@@ -13,6 +13,7 @@ builder.Services.AddScoped<CookiesService>();
 builder.Services.AddScoped<AccessTokenService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<ProductService>();
+builder.Services.AddScoped<RegisterService>();
 builder.Services.AddHttpClient("AppClient", opt =>
 {
     opt.BaseAddress = new Uri("http://localhost:5156/api/");
